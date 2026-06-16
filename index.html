@@ -712,7 +712,7 @@
 <header>
   <div class="header-top">
     <div class="logo-dot">🏥</div>
-    <h1>SCUH Navigator</h1>
+    <h1><a href="#" onclick="goHome()" style="color:inherit;text-decoration:none">SCUH Navigator</a></h1>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Light Mode</button>
   </div>
   <div class="subtitle">Sunshine Coast University Hospital · Birtinya</div>
@@ -725,10 +725,10 @@
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('find')">Find a Dept</button>
+    <button class="tab" onclick="switchTab('all')">All Depts</button>
     <button class="tab" onclick="switchTab('parking')">Parking</button>
     <button class="tab" onclick="switchTab('map')">Map</button>
-    <button class="tab" onclick="switchTab('all')">All Depts</button>
+    <button class="tab active" onclick="switchTab('find')">Find a Dept</button>
   </div>
 
   <!-- TAB: FIND -->
@@ -1516,7 +1516,7 @@ function clearDirection() {
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['find','parking','map','all'][i] === tab);
+    t.classList.toggle('active', ['all','parking','map','find'][i] === tab);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
@@ -1539,6 +1539,14 @@ function mapTap(info) {
   el.style.display = 'block';
   el.innerHTML = '📍 ' + info;
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function goHome() {
+  switchTab('find');
+  clearDirection();
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ─── OUTPATIENTS ──────────────────────────────────────────────────────────
