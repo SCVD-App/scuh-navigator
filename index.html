@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SCUH Navigator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1f2d45;
+    --accent: #2563eb;
+    --accent2: #3b82f6;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --highlight: #dbeafe;
+    --zone-a: #2563eb;
+    --zone-b: #059669;
+  }
+
+  body.light {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface2: #e8eef5;
+    --border: #cbd5e1;
+    --accent: #1d4ed8;
+    --accent2: #2563eb;
+    --green: #059669;
+    --amber: #d97706;
+    --red: #dc2626;
+    --text: #0f172a;
+    --muted: #475569;
+    --highlight: #1e40af;
+    --zone-a: #1d4ed8;
+    --zone-b: #047857;
+  }
+
+  body.light header {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  }
+
+  body.light h1 { color: #ffffff; }
+  body.light .subtitle { color: rgba(255,255,255,0.75); }
+
+  body.light .zone-a-card {
+    background: rgba(29,78,216,0.08);
+    border-color: rgba(29,78,216,0.25);
+  }
+
+  body.light .zone-b-card {
+    background: rgba(4,120,87,0.08);
+    border-color: rgba(4,120,87,0.25);
+  }
+
+  body.light .info-banner {
+    background: rgba(29,78,216,0.08);
+    border-color: rgba(29,78,216,0.2);
+    color: #1e3a8a;
+  }
+
+  body.light .parking-rec {
+    background: rgba(217,119,6,0.08);
+    border-color: rgba(217,119,6,0.25);
+  }
+
+  .theme-toggle {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 5px 12px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  body.light .theme-toggle {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0a0f1a 0%, #0d1b35 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .logo-dot {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 44px;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* SEARCH */
+  .search-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .search-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+  }
+
+  .search-box input::placeholder { color: var(--muted); }
+
+  .search-box button {
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* RESULTS */
+  .results {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .result-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .result-item:last-child { border-bottom: none; }
+  .result-item:hover { background: var(--surface2); }
+
+  .result-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .zone-a-tag { background: rgba(37,99,235,0.2); color: #93c5fd; }
+  .zone-b-tag { background: rgba(5,150,105,0.2); color: #6ee7b7; }
+  .zone-p-tag { background: rgba(245,158,11,0.2); color: #fcd34d; }
+
+  .result-name { font-size: 15px; font-weight: 500; }
+
+  /* DIRECTION CARD */
+  .direction-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .card-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  }
+
+  .destination-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .location-code-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .zone-a-badge { background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3); color: #93c5fd; }
+  .zone-b-badge { background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.3); color: #6ee7b7; }
+  .zone-p-badge { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+
+  /* PARKING RECOMMENDATION */
+  .parking-rec {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .parking-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .parking-rec-content { flex: 1; }
+
+  .parking-rec-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #fcd34d;
+    margin-bottom: 3px;
+  }
+
+  .parking-rec-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* STEPS */
+  .steps-section {
+    padding: 20px;
+  }
+
+  .steps-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .step:last-child { margin-bottom: 0; }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-num.active { background: var(--accent); color: white; }
+  .step-num.done { background: var(--green); color: white; }
+  .step-num.final { background: #7c3aed; color: white; }
+
+  .step-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    margin: 4px 0;
+    min-height: 20px;
+  }
+
+  .step-content {
+    padding-bottom: 16px;
+    flex: 1;
+  }
+
+  .step:last-child .step-content { padding-bottom: 0; }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    line-height: 1.4;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .step-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+
+  /* ZONE LEGEND */
+  .zone-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .zone-card {
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid;
+  }
+
+  .zone-a-card {
+    background: rgba(37,99,235,0.08);
+    border-color: rgba(37,99,235,0.2);
+  }
+
+  .zone-b-card {
+    background: rgba(5,150,105,0.08);
+    border-color: rgba(5,150,105,0.2);
+  }
+
+  .zone-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .zone-a-card .zone-card-title { color: #93c5fd; }
+  .zone-b-card .zone-card-title { color: #6ee7b7; }
+
+  .zone-card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+
+  /* QUICK ACCESS GRID */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .quick-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+
+  .quick-btn:hover {
+    background: var(--surface2);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .quick-btn-icon { font-size: 22px; margin-bottom: 6px; }
+  .quick-btn-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .quick-btn-code { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  /* PARKING INFO */
+  .parking-grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .parking-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .parking-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .parking-badge {
+    background: rgba(245,158,11,0.15);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: #fcd34d;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  .parking-card-name { font-size: 15px; font-weight: 600; }
+  .parking-card-note { font-size: 12px; color: var(--muted); }
+
+  .parking-best-for {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .parking-best-for strong {
+    color: #fcd34d;
+    font-weight: 600;
+  }
+
+  .dept-pill {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    margin: 2px 3px 2px 0;
+  }
+
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    transition: all 0.15s;
+  }
+
+  .back-btn:hover { color: var(--text); border-color: var(--accent); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px;
+    background: none;
+    border: none;
+    border-radius: 9px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* IMPORTANT NOTE */
+  .info-banner {
+    background: rgba(37,99,235,0.08);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #93c5fd;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .all-depts {
+    display: grid;
+    gap: 8px;
+  }
+
+  .dept-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .dept-row:hover {
+    background: var(--surface2);
+    border-color: var(--accent);
+  }
+
+  .dept-row-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .dept-row-code { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+
+  .no-results {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* FLOOR PLAN MAP */
+  .map-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .map-level-tabs {
+    display: flex;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .map-level-btn {
+    flex: 1;
+    padding: 8px 4px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .map-level-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .map-svg-wrapper {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .map-svg-wrapper svg {
+    width: 100%;
+    max-width: 560px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .map-legend {
+    display: flex;
+    gap: 12px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .map-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .map-highlight-info {
+    background: rgba(37,99,235,0.08);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #93c5fd;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  /* PRICE TAG */
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-row span:last-child { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo-dot">🏥</div>
+    <h1>SCUH Navigator</h1>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Light Mode</button>
+  </div>
+  <div class="subtitle">Sunshine Coast University Hospital · Birtinya</div>
+  <div style="margin-left:44px;margin-top:4px;font-size:11px;color:#374151;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.2);border-radius:6px;padding:4px 10px;display:inline-block">
+    ⚠️ Community-built tool · Unverified · Last updated June 2026
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('find')">Find a Dept</button>
+    <button class="tab" onclick="switchTab('parking')">Parking</button>
+    <button class="tab" onclick="switchTab('map')">Map</button>
+    <button class="tab" onclick="switchTab('all')">All Depts</button>
+  </div>
+
+  <!-- TAB: FIND -->
+  <div id="tab-find" class="tab-content active">
+
+    <div class="info-banner">
+      ℹ️ Enter a department name or tap a quick-access button below. Directions assume you start from your parked car or a hospital entrance.
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search department…" oninput="onSearch()" onkeydown="if(event.key==='Enter')doSearch()">
+      <button onclick="doSearch()">Go</button>
+    </div>
+
+    <div class="results" id="searchResults"></div>
+
+    <!-- DIRECTION CARD -->
+    <div class="direction-card" id="directionCard">
+      <div class="card-header">
+        <button class="back-btn" onclick="clearDirection()">← Back</button>
+        <div class="destination-name" id="cardName"></div>
+        <div id="cardBadge"></div>
+        <div style="margin-top:12px" id="cardParking"></div>
+      </div>
+      <div class="steps-section">
+        <div class="steps-label">Walking Directions</div>
+        <div id="cardSteps"></div>
+      </div>
+    </div>
+
+    <!-- QUICK ACCESS -->
+    <div id="quickSection">
+      <div style="margin-bottom:16px">
+        <button onclick="showOutpatients()" style="width:100%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:14px;padding:18px 20px;color:white;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+          <div style="text-align:left">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px">Most Common</div>
+            <div style="font-size:20px;font-weight:700">🏥 Outpatient Appointments</div>
+            <div style="font-size:13px;opacity:0.85;margin-top:3px">All clinics · Level 1 · Zone A</div>
+          </div>
+          <div style="font-size:28px">›</div>
+        </button>
+      </div>
+
+      <div id="outpatientsMenu" style="display:none;margin-bottom:20px">
+        <button class="back-btn" onclick="hideOutpatients()">← Back</button>
+        <div style="background:rgba(29,78,216,0.08);border:1px solid rgba(29,78,216,0.2);border-radius:10px;padding:12px 14px;font-size:13px;color:#93c5fd;margin-bottom:14px;line-height:1.6">
+          💡 All outpatient clinics are on <strong>Level 1</strong>. Park at <strong>P1 (Eccles Blvd)</strong>, take the link bridge, then <strong>Lift A to Level 1</strong>. Check your letter for your clinic code.
+        </div>
+        <div style="display:grid;gap:10px" id="outpatientTiles"></div>
+      </div>
+
+      <div class="section-title">Quick Access</div>
+      <div class="zone-legend">
+        <div class="zone-a-card zone-card">
+          <div class="zone-card-title">🔵 Zone A (Blue) — North</div>
+          <div class="zone-card-desc">Northern end of main building. Lift A serves Levels 0–5.</div>
+        </div>
+        <div class="zone-b-card zone-card">
+          <div class="zone-card-title">🟢 Zone B (Green) — South</div>
+          <div class="zone-card-desc">Southern end of main building. Lift B serves Levels 0–5.</div>
+        </div>
+      </div>
+      <div class="quick-grid" id="quickGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB: MAP -->
+  <div id="tab-map" class="tab-content">
+    <div class="info-banner">
+      🗺️ Schematic floor plan — not to scale. Tap a room to highlight it. Always follow official hospital signage.
+    </div>
+
+    <div id="mapHighlightInfo" class="map-highlight-info"></div>
+
+    <div class="map-container">
+      <div class="map-level-tabs">
+        <button class="map-level-btn active" onclick="showMapLevel('site')">Site</button>
+        <button class="map-level-btn" onclick="showMapLevel('g')">Level 0</button>
+        <button class="map-level-btn" onclick="showMapLevel('1')">Level 1</button>
+        <button class="map-level-btn" onclick="showMapLevel('2')">Level 2+</button>
+      </div>
+
+      <!-- SITE MAP -->
+      <div id="map-site" class="map-svg-wrapper">
+        <svg viewBox="0 0 560 380" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+          <!-- Background -->
+          <rect width="560" height="380" fill="#0a0f1a"/>
+          <!-- Roads -->
+          <rect x="0" y="30" width="560" height="18" fill="#1a2236" opacity="0.8"/> <!-- Eccles Blvd top -->
+          <rect x="0" y="332" width="560" height="18" fill="#1a2236" opacity="0.8"/> <!-- Eccles Blvd bottom -->
+          <rect x="530" y="0" width="18" height="380" fill="#1a2236" opacity="0.8"/> <!-- Doherty St right -->
+          <rect x="0" y="0" width="18" height="380" fill="#1a2236" opacity="0.8"/> <!-- Barry Moy Rd left -->
+          <!-- Road labels -->
+          <text x="280" y="24" fill="#64748b" font-size="9" text-anchor="middle">Eccles Boulevard</text>
+          <text x="280" y="350" fill="#64748b" font-size="9" text-anchor="middle">Eccles Boulevard</text>
+          <text x="546" y="200" fill="#64748b" font-size="9" text-anchor="middle" transform="rotate(90,546,200)">Doherty St</text>
+          <!-- Hollows Lane -->
+          <rect x="80" y="48" width="12" height="80" fill="#1a2236" opacity="0.7"/>
+          <text x="75" y="100" fill="#64748b" font-size="8" text-anchor="middle" transform="rotate(-90,75,100)">Hollows Ln</text>
+          <!-- Frazer Lane -->
+          <rect x="130" y="300" width="12" height="32" fill="#1a2236" opacity="0.7"/>
+          <text x="136" y="360" fill="#64748b" font-size="8" text-anchor="middle">Frazer Ln</text>
+          <!-- Dunlop Lane -->
+          <rect x="18" y="180" width="60" height="10" fill="#1a2236" opacity="0.7"/>
+          <text x="48" y="195" fill="#64748b" font-size="8" text-anchor="middle">Dunlop Ln</text>
+
+          <!-- P1 Carpark -->
+          <rect x="80" y="48" width="110" height="90" rx="4" fill="#1f2d45" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="135" y="88" fill="#fcd34d" font-size="13" font-weight="700" text-anchor="middle">P</text>
+          <text x="135" y="103" fill="#fcd34d" font-size="11" font-weight="700" text-anchor="middle">P1</text>
+          <text x="135" y="116" fill="#64748b" font-size="8" text-anchor="middle">Eccles Blvd entry</text>
+
+          <!-- Link Bridge P1 → Hospital -->
+          <rect x="190" y="100" width="42" height="10" rx="3" fill="#2563eb" opacity="0.6"/>
+          <text x="211" y="109" fill="#93c5fd" font-size="7" text-anchor="middle">bridge</text>
+
+          <!-- Main Hospital Building -->
+          <rect x="232" y="80" width="220" height="220" rx="6" fill="#111827" stroke="#2563eb" stroke-width="2"/>
+          <text x="342" y="106" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">MAIN HOSPITAL</text>
+          <!-- Zone A label (north/blue) -->
+          <rect x="252" y="115" width="80" height="50" rx="3" fill="rgba(37,99,235,0.15)" stroke="rgba(37,99,235,0.4)" stroke-width="1"/>
+          <text x="292" y="137" fill="#93c5fd" font-size="9" font-weight="700" text-anchor="middle">ZONE A</text>
+          <text x="292" y="150" fill="#64748b" font-size="8" text-anchor="middle">Blue · North</text>
+          <text x="292" y="161" fill="#64748b" font-size="8" text-anchor="middle">Lift A</text>
+          <!-- Zone B label (south/green) -->
+          <rect x="252" y="215" width="80" height="50" rx="3" fill="rgba(5,150,105,0.15)" stroke="rgba(5,150,105,0.4)" stroke-width="1"/>
+          <text x="292" y="237" fill="#6ee7b7" font-size="9" font-weight="700" text-anchor="middle">ZONE B</text>
+          <text x="292" y="250" fill="#64748b" font-size="8" text-anchor="middle">Green · South</text>
+          <text x="292" y="261" fill="#64748b" font-size="8" text-anchor="middle">Lift B</text>
+          <!-- Courtyard -->
+          <rect x="350" y="120" width="80" height="130" rx="4" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="390" y="182" fill="#6ee7b7" font-size="8" text-anchor="middle" opacity="0.7">Courtyard</text>
+          <!-- Main Entry arrow -->
+          <polygon points="342,300 332,316 352,316" fill="#2563eb"/>
+          <text x="342" y="328" fill="#93c5fd" font-size="8" text-anchor="middle">Main Entry</text>
+
+          <!-- ED -->
+          <rect x="158" y="80" width="70" height="45" rx="4" fill="#ef444420" stroke="#ef4444" stroke-width="1.5" onclick="mapTap('ED — Emergency Department. Enter from Hollows Lane (northwest). Drop-off zone directly adjacent.')"/>
+          <text x="193" y="99" fill="#fca5a5" font-size="9" font-weight="700" text-anchor="middle">EMERGENCY</text>
+          <text x="193" y="112" fill="#fca5a5" font-size="8" text-anchor="middle">Hollows Lane</text>
+
+          <!-- Lakeside Building -->
+          <rect x="215" y="298" width="100" height="50" rx="4" fill="rgba(124,58,237,0.12)" stroke="rgba(124,58,237,0.4)" stroke-width="1.5" onclick="mapTap('Lakeside Building — Adem Crosby Cancer Centre (Level G), ICU &amp; Coronary Care (Level 2). Access via courtyard/southern side.')"/>
+          <text x="265" y="320" fill="#c4b5fd" font-size="9" font-weight="700" text-anchor="middle">LAKESIDE</text>
+          <text x="265" y="333" fill="#c4b5fd" font-size="8" text-anchor="middle">Adem Crosby / ICU</text>
+
+          <!-- The Hub / SCHI -->
+          <rect x="452" y="248" width="72" height="52" rx="4" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.35)" stroke-width="1.5"/>
+          <text x="488" y="271" fill="#fcd34d" font-size="9" font-weight="700" text-anchor="middle">THE HUB</text>
+          <text x="488" y="284" fill="#fcd34d" font-size="8" text-anchor="middle">SCHI</text>
+
+          <!-- Mental Health -->
+          <rect x="22" y="170" width="72" height="45" rx="4" fill="rgba(100,116,139,0.12)" stroke="#475569" stroke-width="1.5"/>
+          <text x="58" y="189" fill="#94a3b8" font-size="8" font-weight="700" text-anchor="middle">MENTAL</text>
+          <text x="58" y="201" fill="#94a3b8" font-size="8" text-anchor="middle">HEALTH</text>
+          <text x="58" y="212" fill="#475569" font-size="7" text-anchor="middle">Dunlop Ln</text>
+
+          <!-- P2 -->
+          <rect x="452" y="130" width="60" height="45" rx="4" fill="#1f2d45" stroke="#f59e0b" stroke-width="1" opacity="0.7"/>
+          <text x="482" y="156" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">P2</text>
+
+          <!-- P3 -->
+          <rect x="452" y="195" width="60" height="42" rx="4" fill="#1f2d45" stroke="#f59e0b" stroke-width="1" opacity="0.7"/>
+          <text x="482" y="219" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">P3</text>
+
+          <!-- Compass -->
+          <circle cx="520" cy="58" r="14" fill="#1a2236" stroke="#1f2d45" stroke-width="1"/>
+          <text x="520" y="50" fill="#e2e8f0" font-size="8" text-anchor="middle">N</text>
+          <text x="520" y="68" fill="#64748b" font-size="7" text-anchor="middle">S</text>
+          <text x="510" y="62" fill="#64748b" font-size="7" text-anchor="middle">W</text>
+          <text x="530" y="62" fill="#64748b" font-size="7" text-anchor="middle">E</text>
+          <line x1="520" y1="48" x2="520" y2="72" stroke="#e2e8f0" stroke-width="0.5"/>
+          <line x1="508" y1="60" x2="532" y2="60" stroke="#64748b" stroke-width="0.5"/>
+        </svg>
+      </div>
+
+      <!-- LEVEL 0 / GROUND MAP -->
+      <div id="map-g" class="map-svg-wrapper" style="display:none">
+        <svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+          <rect width="560" height="420" fill="#0a0f1a"/>
+          <!-- Building outline -->
+          <rect x="20" y="20" width="520" height="380" rx="8" fill="#111827" stroke="#1f2d45" stroke-width="2"/>
+          <!-- North/South spine corridor -->
+          <rect x="180" y="20" width="200" height="380" rx="0" fill="#0d1521" stroke="#1f2d45" stroke-width="1"/>
+          <text x="280" y="215" fill="#1f2d45" font-size="9" text-anchor="middle" transform="rotate(-90,280,215)">Main Corridor (N–S Spine)</text>
+
+          <!-- ZONE A — North block -->
+          <rect x="20" y="20" width="160" height="185" rx="6" fill="rgba(37,99,235,0.07)" stroke="rgba(37,99,235,0.3)" stroke-width="1.5"/>
+          <text x="100" y="50" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">ZONE A — NORTH</text>
+
+          <!-- Lift A -->
+          <rect x="55" y="65" width="70" height="50" rx="4" fill="rgba(37,99,235,0.2)" stroke="#2563eb" stroke-width="2" onclick="mapTap('Lift A — Zone A (Blue). Serves Levels 0–5. Level 1 link bridge to P1 carpark on this side.')"/>
+          <text x="90" y="87" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">LIFT A</text>
+          <text x="90" y="101" fill="#64748b" font-size="8" text-anchor="middle">L0–L5</text>
+
+          <!-- Imaging A01 -->
+          <rect x="25" y="130" width="150" height="50" rx="4" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.3)" stroke-width="1" onclick="mapTap('A01 — Medical Imaging / Radiology. Ground floor Zone A. Best parking: P1 or Southern Entrance.')"/>
+          <text x="100" y="152" fill="#93c5fd" font-size="10" font-weight="600" text-anchor="middle">A01 · Imaging</text>
+          <text x="100" y="167" fill="#64748b" font-size="8" text-anchor="middle">Medical Imaging / Radiology</text>
+
+          <!-- Main Reception -->
+          <rect x="185" y="320" width="190" height="55" rx="4" fill="rgba(37,99,235,0.12)" stroke="rgba(37,99,235,0.3)" stroke-width="1.5"/>
+          <text x="280" y="345" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">MAIN RECEPTION</text>
+          <text x="280" y="359" fill="#64748b" font-size="8" text-anchor="middle">Cashier · Info · Security</text>
+          <!-- Main Entry arrow -->
+          <polygon points="280,375 270,390 290,390" fill="#2563eb"/>
+          <text x="280" y="410" fill="#93c5fd" font-size="9" text-anchor="middle" font-weight="700">↓ Main Entry (Doherty St)</text>
+
+          <!-- Food court -->
+          <rect x="185" y="155" width="190" height="100" rx="4" fill="rgba(245,158,11,0.07)" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
+          <text x="280" y="178" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">☕ FOOD COURT</text>
+          <text x="280" y="193" fill="#64748b" font-size="8" text-anchor="middle">Merlo Coffee (×2) · Kitchen Carvery</text>
+          <text x="280" y="206" fill="#64748b" font-size="8" text-anchor="middle">Sushi Sushi · Alice &amp; George · Boost</text>
+          <text x="280" y="219" fill="#64748b" font-size="8" text-anchor="middle">Ezymart · Ivy Lane Flowers</text>
+
+          <!-- Pharmacy A17 placeholder at ground -->
+          <rect x="185" y="80" width="190" height="65" rx="4" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+          <text x="280" y="105" fill="#6ee7b7" font-size="10" font-weight="600" text-anchor="middle">Hospital Street</text>
+          <text x="280" y="120" fill="#64748b" font-size="8" text-anchor="middle">Retail · Info kiosks · Volunteers</text>
+
+          <!-- ZONE B — South block -->
+          <rect x="380" y="20" width="160" height="185" rx="6" fill="rgba(5,150,105,0.07)" stroke="rgba(5,150,105,0.3)" stroke-width="1.5"/>
+          <text x="460" y="50" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">ZONE B — SOUTH</text>
+
+          <!-- Lift B -->
+          <rect x="435" y="65" width="70" height="50" rx="4" fill="rgba(5,150,105,0.2)" stroke="#059669" stroke-width="2" onclick="mapTap('Lift B — Zone B (Green). Serves Levels 0–5. Southern end of main building.')"/>
+          <text x="470" y="87" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">LIFT B</text>
+          <text x="470" y="101" fill="#64748b" font-size="8" text-anchor="middle">L0–L5</text>
+
+          <!-- Zone B ground depts -->
+          <rect x="385" y="130" width="150" height="65" rx="4" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.25)" stroke-width="1" onclick="mapTap('Zone B Ground: B01 Adem Crosby (via courtyard/Lakeside Bldg), B02 Pastoral Care, B03 Transit Lounge, B04 ATSI Health')"/>
+          <text x="460" y="152" fill="#6ee7b7" font-size="9" font-weight="600" text-anchor="middle">B01–B04</text>
+          <text x="460" y="165" fill="#64748b" font-size="7.5" text-anchor="middle">Adem Crosby (via Lakeside)</text>
+          <text x="460" y="178" fill="#64748b" font-size="7.5" text-anchor="middle">Pastoral · Transit · ATSI Health</text>
+
+          <!-- ED -->
+          <rect x="20" y="210" width="155" height="90" rx="4" fill="rgba(239,68,68,0.1)" stroke="#ef4444" stroke-width="2" onclick="mapTap('Emergency Department — Enter from Hollows Lane (northwest). RED zone. Separate from Zone A/B.')"/>
+          <text x="97" y="240" fill="#fca5a5" font-size="11" font-weight="700" text-anchor="middle">🚨 EMERGENCY</text>
+          <text x="97" y="255" fill="#fca5a5" font-size="8" text-anchor="middle">Enter from Hollows Lane</text>
+          <text x="97" y="268" fill="#64748b" font-size="8" text-anchor="middle">Drop-off zone adjacent</text>
+
+          <!-- Zone B south stuff -->
+          <rect x="385" y="210" width="155" height="90" rx="4" fill="rgba(5,150,105,0.06)" stroke="rgba(5,150,105,0.2)" stroke-width="1"/>
+          <text x="462" y="240" fill="#6ee7b7" font-size="9" font-weight="600" text-anchor="middle">Southern Zone</text>
+          <text x="462" y="255" fill="#64748b" font-size="7.5" text-anchor="middle">Cancer Care Entrance</text>
+          <text x="462" y="268" fill="#64748b" font-size="7.5" text-anchor="middle">→ Frazer Lane</text>
+
+          <!-- P1 Bridge indicator -->
+          <rect x="20" y="50" width="35" height="8" rx="3" fill="#2563eb" opacity="0.5"/>
+          <text x="37" y="65" fill="#93c5fd" font-size="7" text-anchor="middle">← P1 Bridge (L1)</text>
+        </svg>
+      </div>
+
+      <!-- LEVEL 1 MAP -->
+      <div id="map-1" class="map-svg-wrapper" style="display:none">
+        <svg viewBox="0 0 560 460" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+          <rect width="560" height="460" fill="#0a0f1a"/>
+          <!-- Building outline -->
+          <rect x="20" y="30" width="520" height="390" rx="8" fill="#111827" stroke="#1f2d45" stroke-width="2"/>
+
+          <!-- P1 LINK BRIDGE — comes in from left at level 1 -->
+          <rect x="0" y="95" width="55" height="28" rx="3" fill="#2563eb" opacity="0.4"/>
+          <text x="27" y="113" fill="#93c5fd" font-size="8" text-anchor="middle" font-weight="700">P1 Bridge</text>
+          <line x1="55" y1="109" x2="75" y2="109" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,2"/>
+
+          <!-- ZONE A BLOCK -->
+          <rect x="20" y="30" width="165" height="390" rx="6" fill="rgba(37,99,235,0.06)" stroke="rgba(37,99,235,0.3)" stroke-width="1.5"/>
+          <text x="102" y="55" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">ZONE A — LEVEL 1</text>
+
+          <!-- Lift A -->
+          <rect x="30" y="65" width="75" height="55" rx="4" fill="rgba(37,99,235,0.25)" stroke="#2563eb" stroke-width="2" onclick="mapTap('Lift A — Exit here for all A10–A19 clinics. P1 link bridge connects at this level.')"/>
+          <text x="67" y="89" fill="#93c5fd" font-size="11" font-weight="700" text-anchor="middle">LIFT A</text>
+          <text x="67" y="104" fill="#64748b" font-size="8" text-anchor="middle">Exit here L1</text>
+
+          <!-- A16 Allied Health -->
+          <rect x="28" y="135" width="152" height="42" rx="4" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.25)" stroke-width="1" onclick="mapTap('A16 — Clinic 1 / Allied Health Reception. First on your right as you exit Lift A.')"/>
+          <text x="104" y="153" fill="#93c5fd" font-size="10" font-weight="600" text-anchor="middle">A16 · Clinic 1</text>
+          <text x="104" y="166" fill="#64748b" font-size="8" text-anchor="middle">Allied Health Reception</text>
+
+          <!-- A15 General Surgery etc -->
+          <rect x="28" y="185" width="152" height="42" rx="4" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.25)" stroke-width="1" onclick="mapTap('A15 — Clinic 1 / General Surgery · Gynaecology · Urology · Genetics. Immediately on your right as you exit Lift A on Level 1.')"/>
+          <text x="104" y="203" fill="#93c5fd" font-size="10" font-weight="600" text-anchor="middle">A15 · Clinic 1</text>
+          <text x="104" y="216" fill="#64748b" font-size="8" text-anchor="middle">Surgery · Gynae · Urology</text>
+
+          <!-- Side corridor indicator -->
+          <rect x="155" y="235" width="10" height="100" rx="2" fill="rgba(37,99,235,0.15)" stroke="rgba(37,99,235,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="172" y="285" fill="#93c5fd" font-size="7" text-anchor="start" transform="rotate(0)">Side corridor →</text>
+
+          <!-- A14 Orthopaedics -->
+          <rect x="28" y="235" width="152" height="42" rx="4" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.25)" stroke-width="1" onclick="mapTap('A14 — Clinic 2 / Orthopaedics · Fracture · Acute Knee · Plaster Room. Turn RIGHT after A15 along the main corridor.')"/>
+          <text x="104" y="253" fill="#93c5fd" font-size="10" font-weight="600" text-anchor="middle">A14 · Clinic 2</text>
+          <text x="104" y="266" fill="#64748b" font-size="8" text-anchor="middle">Orthopaedics · Fracture</text>
+
+          <!-- A13 Audiology — in side corridor -->
+          <rect x="28" y="285" width="72" height="38" rx="4" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.2)" stroke-width="1" onclick="mapTap('A13 — Clinic 3 / Audiology. In the side corridor between A14 and A15 — turn into the corridor.')"/>
+          <text x="64" y="301" fill="#93c5fd" font-size="9" font-weight="600" text-anchor="middle">A13 · Clinic 3</text>
+          <text x="64" y="314" fill="#64748b" font-size="7.5" text-anchor="middle">Audiology</text>
+
+          <!-- A10-A12 in side corridor -->
+          <rect x="108" y="285" width="72" height="38" rx="4" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.2)" stroke-width="1" onclick="mapTap('A10–A12 — Clinic 4 &amp; 5. In the side corridor. Turn into the corridor between A14 and A15 — clinics on your right. A10: Cardiology/Resp/Neuro/IBD/Rheum. A11: Pathology.')"/>
+          <text x="144" y="301" fill="#93c5fd" font-size="9" font-weight="600" text-anchor="middle">A10–A12</text>
+          <text x="144" y="314" fill="#64748b" font-size="7.5" text-anchor="middle">Clinic 4–5</text>
+
+          <!-- Pharmacy A17 -->
+          <rect x="28" y="330" width="152" height="42" rx="4" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.25)" stroke-width="1" onclick="mapTap('A17 — Pharmacy. Level 1 Zone A. Take Lift A to Level 1 and follow signs to A17.')"/>
+          <text x="104" y="348" fill="#6ee7b7" font-size="10" font-weight="600" text-anchor="middle">A17 · Pharmacy</text>
+          <text x="104" y="361" fill="#64748b" font-size="8" text-anchor="middle">Community Pharmacy</text>
+
+          <!-- Health Info / Other A18-19 -->
+          <rect x="28" y="380" width="152" height="30" rx="4" fill="rgba(37,99,235,0.06)" stroke="rgba(37,99,235,0.15)" stroke-width="1"/>
+          <text x="104" y="399" fill="#64748b" font-size="8" text-anchor="middle">A18–A19 Health Info Mgmt</text>
+
+          <!-- CENTRAL CORRIDOR -->
+          <rect x="185" y="30" width="195" height="390" rx="0" fill="#0d1521" stroke="#1f2d45" stroke-width="1"/>
+          <text x="282" y="230" fill="#1f2d45" font-size="9" text-anchor="middle" transform="rotate(-90,282,230)">Central Corridor / Courtyard Views</text>
+
+          <!-- ZONE B BLOCK -->
+          <rect x="380" y="30" width="160" height="390" rx="6" fill="rgba(5,150,105,0.06)" stroke="rgba(5,150,105,0.3)" stroke-width="1.5"/>
+          <text x="460" y="55" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">ZONE B — LEVEL 1</text>
+
+          <!-- Lift B -->
+          <rect x="455" y="65" width="75" height="55" rx="4" fill="rgba(5,150,105,0.25)" stroke="#059669" stroke-width="2" onclick="mapTap('Lift B — Zone B (Green). Exit here for B10–B13 clinics. Renal Clinic, ACC Clinics, Executive.')"/>
+          <text x="492" y="89" fill="#6ee7b7" font-size="11" font-weight="700" text-anchor="middle">LIFT B</text>
+          <text x="492" y="104" fill="#64748b" font-size="8" text-anchor="middle">Exit here L1</text>
+
+          <!-- B10 Executive -->
+          <rect x="385" y="135" width="148" height="40" rx="4" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.2)" stroke-width="1" onclick="mapTap('B10 — SCHHS Executive Reception. Level 1 Zone B. Take Lift B to Level 1.')"/>
+          <text x="459" y="153" fill="#6ee7b7" font-size="9" font-weight="600" text-anchor="middle">B10 · Executive</text>
+          <text x="459" y="166" fill="#64748b" font-size="7.5" text-anchor="middle">SCHHS Executive Reception</text>
+
+          <!-- B11 Renal -->
+          <rect x="385" y="183" width="148" height="40" rx="4" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.2)" stroke-width="1" onclick="mapTap('B11 — Renal Clinic / Dialysis. Level 1 Zone B. Best parking: Southern Entrance off Frazer Lane — dedicated for frequent visitors.')"/>
+          <text x="459" y="201" fill="#6ee7b7" font-size="9" font-weight="600" text-anchor="middle">B11 · Renal Clinic</text>
+          <text x="459" y="214" fill="#64748b" font-size="7.5" text-anchor="middle">Dialysis · frequent visitors</text>
+
+          <!-- B12-B13 ACC Clinics -->
+          <rect x="385" y="231" width="148" height="50" rx="4" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.2)" stroke-width="1" onclick="mapTap('B12–B13 — ACC Clinics 6 &amp; 7. ENT · Dermatology · Wound Care · Stoma · Vascular · Minor Procedures · Trial of Void · Paed pre-op. Take Lift B to Level 1.')"/>
+          <text x="459" y="250" fill="#6ee7b7" font-size="9" font-weight="600" text-anchor="middle">B12–B13 · Clinics 6–7</text>
+          <text x="459" y="263" fill="#64748b" font-size="7.5" text-anchor="middle">ENT · Derm · Wound · Vascular</text>
+          <text x="459" y="275" fill="#64748b" font-size="7.5" text-anchor="middle">Minor Procedures · Paed pre-op</text>
+
+          <!-- Container Cafe at link bridge end -->
+          <rect x="385" y="340" width="148" height="38" rx="4" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.2)" stroke-width="1"/>
+          <text x="459" y="358" fill="#fcd34d" font-size="9" font-weight="600" text-anchor="middle">☕ Container Cafe</text>
+          <text x="459" y="371" fill="#64748b" font-size="7.5" text-anchor="middle">Near P1 link bridge walkway</text>
+
+          <!-- Animated dotted path: P1 → Lift A → A15 example -->
+          <path id="routePath" d="M 27,109 L 67,109 L 67,120 L 67,185" stroke="#2563eb" stroke-width="2.5" fill="none" stroke-dasharray="6,4" opacity="0.7">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <circle cx="27" cy="109" r="5" fill="#2563eb" opacity="0.9"/>
+          <text x="10" y="107" fill="#93c5fd" font-size="7" text-anchor="middle">P1</text>
+        </svg>
+      </div>
+
+      <!-- LEVEL 2+ MAP -->
+      <div id="map-2" class="map-svg-wrapper" style="display:none">
+        <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, sans-serif">
+          <rect width="560" height="400" fill="#0a0f1a"/>
+          <rect x="20" y="20" width="520" height="360" rx="8" fill="#111827" stroke="#1f2d45" stroke-width="2"/>
+          <text x="280" y="45" fill="#64748b" font-size="11" font-weight="700" text-anchor="middle">LEVELS 2–5 — Same Zone A / Zone B layout each floor</text>
+
+          <!-- Zone A column -->
+          <rect x="20" y="55" width="170" height="315" rx="6" fill="rgba(37,99,235,0.06)" stroke="rgba(37,99,235,0.3)" stroke-width="1.5"/>
+          <text x="105" y="78" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">ZONE A (Blue · Lift A)</text>
+
+          <rect x="30" y="90" width="150" height="35" rx="3" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.2)" stroke-width="1" onclick="mapTap('Level 2 Zone A: A20–A29. Day Surgery (A22), Dental (A21), Clinical Investigations (A20), Operating Suites.')"/>
+          <text x="105" y="112" fill="#93c5fd" font-size="9" text-anchor="middle">L2 · A20–A29</text>
+          <text x="105" y="123" fill="#64748b" font-size="7.5" text-anchor="middle">Day Surgery · Dental · Op Suites</text>
+
+          <rect x="30" y="133" width="150" height="35" rx="3" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.15)" stroke-width="1" onclick="mapTap('Level 3 Zone A: A30–A39. Ward 3A, Ward 3B, Sleep Assessment (A32).')"/>
+          <text x="105" y="155" fill="#93c5fd" font-size="9" text-anchor="middle">L3 · A30–A39</text>
+          <text x="105" y="166" fill="#64748b" font-size="7.5" text-anchor="middle">Ward 3A · 3B · Sleep Assessment</text>
+
+          <rect x="30" y="176" width="150" height="35" rx="3" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.15)" stroke-width="1" onclick="mapTap('Level 4 Zone A: A40–A49. Ward 4A (A40), Ward 4B (A41), Child &amp; Adolescent (A42–A43), Maternity Outpatients (A44).')"/>
+          <text x="105" y="198" fill="#93c5fd" font-size="9" text-anchor="middle">L4 · A40–A49</text>
+          <text x="105" y="209" fill="#64748b" font-size="7.5" text-anchor="middle">Ward 4A · 4B · Maternity OPD</text>
+
+          <rect x="30" y="219" width="150" height="35" rx="3" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.15)" stroke-width="1" onclick="mapTap('Level 5 Zone A: A50–A59. Ward 5A (A50), Ward 5B (A51), Rehabilitation (A52).')"/>
+          <text x="105" y="241" fill="#93c5fd" font-size="9" text-anchor="middle">L5 · A50–A59</text>
+          <text x="105" y="252" fill="#64748b" font-size="7.5" text-anchor="middle">Ward 5A · 5B · Rehab</text>
+
+          <rect x="30" y="280" width="150" height="65" rx="4" fill="rgba(37,99,235,0.12)" stroke="#2563eb" stroke-width="2"/>
+          <text x="105" y="302" fill="#93c5fd" font-size="10" font-weight="700" text-anchor="middle">LIFT A</text>
+          <text x="105" y="317" fill="#64748b" font-size="8" text-anchor="middle">Zone A · All levels</text>
+          <text x="105" y="330" fill="#64748b" font-size="7.5" text-anchor="middle">A10s → L1</text>
+          <text x="105" y="341" fill="#64748b" font-size="7.5" text-anchor="middle">A20s → L2  A30s → L3</text>
+
+          <!-- Central -->
+          <rect x="190" y="55" width="180" height="315" rx="0" fill="#0d1521" stroke="#1f2d45" stroke-width="1"/>
+          <text x="280" y="220" fill="#1f2d45" font-size="9" text-anchor="middle" transform="rotate(-90,280,220)">Courtyard / Corridor</text>
+
+          <!-- Zone B column -->
+          <rect x="370" y="55" width="170" height="315" rx="6" fill="rgba(5,150,105,0.06)" stroke="rgba(5,150,105,0.3)" stroke-width="1.5"/>
+          <text x="455" y="78" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">ZONE B (Green · Lift B)</text>
+
+          <rect x="380" y="90" width="150" height="35" rx="3" fill="rgba(5,150,105,0.1)" stroke="rgba(5,150,105,0.2)" stroke-width="1" onclick="mapTap('Level 2 Zone B: B20–B29. Cardiac Care Unit/CCU (B21), Clinical Investigation/CIU (B20).')"/>
+          <text x="455" y="112" fill="#6ee7b7" font-size="9" text-anchor="middle">L2 · B20–B29</text>
+          <text x="455" y="123" fill="#64748b" font-size="7.5" text-anchor="middle">CCU · Clinical Investigation</text>
+
+          <rect x="380" y="133" width="150" height="35" rx="3" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.15)" stroke-width="1" onclick="mapTap('Level 3 Zone B: B30–B39. Ward 3C (B30), Ward 3D (B31).')"/>
+          <text x="455" y="155" fill="#6ee7b7" font-size="9" text-anchor="middle">L3 · B30–B39</text>
+          <text x="455" y="166" fill="#64748b" font-size="7.5" text-anchor="middle">Ward 3C · 3D</text>
+
+          <rect x="380" y="176" width="150" height="35" rx="3" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.15)" stroke-width="1" onclick="mapTap('Level 4 Zone B: B40–B49. Ward 4C (B40), Ward 4D (B41), NICU (B42), Birthing (B43), Maternity Ward (B44).')"/>
+          <text x="455" y="198" fill="#6ee7b7" font-size="9" text-anchor="middle">L4 · B40–B49</text>
+          <text x="455" y="209" fill="#64748b" font-size="7.5" text-anchor="middle">Ward 4C · 4D · NICU · Birthing</text>
+
+          <rect x="380" y="219" width="150" height="35" rx="3" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.15)" stroke-width="1" onclick="mapTap('Level 5 Zone B: B50–B59. Ward 5C/Palliative/Oncology (B50), Ward 5D (B51), Pathology Lab (B52).')"/>
+          <text x="455" y="241" fill="#6ee7b7" font-size="9" text-anchor="middle">L5 · B50–B59</text>
+          <text x="455" y="252" fill="#64748b" font-size="7.5" text-anchor="middle">Palliative · Oncology · Pathology</text>
+
+          <rect x="380" y="280" width="150" height="65" rx="4" fill="rgba(5,150,105,0.12)" stroke="#059669" stroke-width="2"/>
+          <text x="455" y="302" fill="#6ee7b7" font-size="10" font-weight="700" text-anchor="middle">LIFT B</text>
+          <text x="455" y="317" fill="#64748b" font-size="8" text-anchor="middle">Zone B · All levels</text>
+          <text x="455" y="330" fill="#64748b" font-size="7.5" text-anchor="middle">B10s → L1</text>
+          <text x="455" y="341" fill="#64748b" font-size="7.5" text-anchor="middle">B20s → L2  B30s → L3</text>
+        </svg>
+      </div>
+
+      <div class="map-legend">
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#2563eb"></div> Zone A (Blue)</div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#059669"></div> Zone B (Green)</div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ef4444"></div> Emergency</div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#7c3aed"></div> Lakeside Bldg</div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#f59e0b"></div> Parking</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--muted);line-height:1.7;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      📐 <strong style="color:var(--text)">Schematic guide only</strong> — not to architectural scale. Tap any room for details. Always follow official hospital signage and ask staff if unsure.
+    </div>
+  </div>
+
+  <!-- TAB: PARKING -->
+  <div id="tab-parking" class="tab-content">
+
+    <div class="info-banner">
+      🅿️ Parking is managed by Point Parking. Costs $2.40 per 30 min, max $14.50/day.
+    </div>
+
+    <div class="parking-grid" id="parkingGrid"></div>
+
+  </div>
+
+  <!-- TAB: ALL DEPTS -->
+  <div id="tab-all" class="tab-content">
+    <div class="all-depts" id="allDepts"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+const DEPARTMENTS = [
+  // ── Zone A · Level 0 (Ground) ───────────────────────────────────
+  { name: "Imaging (Medical Imaging / Radiology / X-Ray / CT)", code: "A01", zone: "A", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St) — Imaging is on the ground floor", "Follow blue Zone A signs", "A01 Imaging is Level 0 — no lift required", "Look for the blue 'A01 Imaging' sign above the entrance doors"] },
+  { name: "Main Reception & Cashier / Security / ED access",    code: "A02-A03", zone: "A", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Main Reception is on the ground floor — straight ahead from the main doors", "Cashier and Security also located here at A02-A03"] },
+  { name: "Wishlist House (Hospital Foundation)",               code: "A04", zone: "A", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Follow signs to A04 — Wishlist on ground floor"] },
+  { name: "Sunshine Coast Health Institute",                    code: "A05", zone: "A", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Follow signs to Main Entrance then Sunshine Coast Health Institute A05 on ground floor"] },
+
+  // ── Zone A · Level 1 ────────────────────────────────────────────
+  { name: "Clinic 4 — Cardio / Derm / Endocrinology / Gastro / Gen Med / Geriatrics / Hepatology / IBD / Interventional Radiology / Immunology / Neuro / Podiatry / Plastics / Rehab / Respiratory / Rheum / Stroke / Diabetes", code: "A10", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A10 — Clinic 4"] },
+  { name: "Clinic 5 — Pathology / Audiology / Diagnostics",    code: "A11", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A11 — Clinic 5"] },
+  { name: "Diagnostics Clinic",                                code: "A12", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A12 — Diagnostics Clinic"] },
+  { name: "Clinic 3 — Audiology",                             code: "A13", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A13 — Clinic 3 / Audiology"] },
+  { name: "Clinic 2 — Ortho / Fracture / Acute Knee / Hand / OATs / X-ray / Plaster Room / Procedural Rooms", code: "A14", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A14 — Clinic 2"] },
+  { name: "Clinic 1 — General Surgery / Gynaecology / Urology & Genetics", code: "A15", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A15 — Clinic 1"] },
+  { name: "Allied Health Reception",                           code: "A16", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A16 — Allied Health Reception"] },
+  { name: "Pharmacy",                                          code: "A17", zone: "A", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 1", "Follow signs to A17 — Pharmacy"] },
+
+  // ── Zone A · Level 2 ────────────────────────────────────────────
+  { name: "Clinical Research",                                 code: "A20", zone: "A", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 2", "Follow signs to A20 — Clinical Research"] },
+  { name: "Dental Service",                                    code: "A21", zone: "A", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 2", "Follow signs to A21 — Dental Service"] },
+  { name: "Day Surgery / Extended Day Surgery Unit",           code: "A22", zone: "A", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 2", "Follow signs to A22 — Day Surgery. Note: CT Colonoscopy / Endoscopy at Northern entrance Level 2"] },
+  { name: "Intensive Care Unit (ICU) / Paediatric Critical Care", code: "A23", zone: "A", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 2", "Follow signs to A23 — Intensive Care / Paediatric Critical Care"] },
+
+  // ── Zone A · Level 3 ────────────────────────────────────────────
+  { name: "Ward 3A — Infectious Disease / Stroke / Delirium",  code: "A30", zone: "A", level: 3, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 3", "Follow signs to A30 — Ward 3A (Infectious Disease / Stroke / Delirium)"] },
+  { name: "Ward 3B — Respiratory / Renal",                     code: "A31", zone: "A", level: 3, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 3", "Turn left at top of lift for A31 — Ward 3B (Respiratory / Renal)"] },
+  { name: "Sleep Assessment",                                   code: "A32", zone: "A", level: 3, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 3", "Follow signs right to A32 — Sleep Assessment"] },
+
+  // ── Zone A · Level 4 ────────────────────────────────────────────
+  { name: "Ward 4A — Surgical",                                code: "A40", zone: "A", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 4", "Follow signs to A40 — Ward 4A (Surgical)"] },
+  { name: "Ward 4B — Surgical",                                code: "A41", zone: "A", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 4", "Follow signs to A41 — Ward 4B (Surgical)"] },
+  { name: "Child & Adolescent Unit",                           code: "A42", zone: "A", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 4", "Follow signs to A42 — Child & Adolescent Unit"] },
+  { name: "Child & Adolescent Outpatients / Paediatric Clinics", code: "A43", zone: "A", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 4", "Follow signs to A43 — Child & Adolescent Outpatients"] },
+  { name: "Maternity Outpatients",                             code: "A44", zone: "A", level: 4, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane", "Take Lift A to Level 4", "Follow signs to A44 — Maternity Outpatients"] },
+
+  // ── Zone A · Level 5 ────────────────────────────────────────────
+  { name: "Ward 5A — Medical (Ortho)",                         code: "A50", zone: "A", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 5", "Follow signs to A50 — Ward 5A"] },
+  { name: "Ward 5B — Medical",                                 code: "A51", zone: "A", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 5", "Follow signs to A51 — Ward 5B"] },
+  { name: "Rehabilitation Unit",                               code: "A52", zone: "A", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift A to Level 5", "Follow signs to A52 — Rehabilitation Unit. Note: also accessed via Blue Lift"] },
+
+  // ── Zone B · Level 0 (Ground) ───────────────────────────────────
+  { name: "Adem Crosby Cancer Care / Radiation Oncology",      code: "B01", zone: "B", level: 0, parking: "Street", steps: ["Park on Doherty St street parking — pay via EasyPark app", "Enter via the Cancer Care Entrance and follow green Zone B signs", "Adem Crosby Centre is on Level 0 — ground floor, no lift required", "Follow signs to B01 — staff at reception can assist"] },
+  { name: "Volunteer / Spiritual Care / Pastoral Care",        code: "B02", zone: "B", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Follow green Zone B signs on ground floor", "Follow signs to B02 — Pastoral / Spiritual Care"] },
+  { name: "Transit Lounge",                                    code: "B03", zone: "B", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Follow green Zone B signs on ground floor", "Follow signs to B03 — Transit Lounge"] },
+  { name: "Aboriginal & Torres Strait Islander Health",        code: "B04", zone: "B", level: 0, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane", "Follow green Zone B signs", "Follow signs to B04 on ground floor"] },
+  { name: "Cancer Care Entrance",                              code: "—",   zone: "B", level: 0, parking: "Street", steps: ["Park on Doherty St street parking — pay via EasyPark app", "Follow signs to Zone B (green) — Cancer Care Entrance on ground floor"] },
+  { name: "Frazer Lane Entrance",                              code: "—",   zone: "B", level: 0, parking: "Southern", steps: ["Enter from Frazer Lane off Doherty St — Southern Entrance", "Follow green Zone B signs", "Serves Cancer Care, Mental Health, Maternity and Southern carpark"] },
+
+  // ── Zone B · Level 1 ────────────────────────────────────────────
+  { name: "Renal Clinic / Renal Dialysis",                     code: "B11", zone: "B", level: 1, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane — dedicated for frequent visitors", "Take Lift B to Level 1", "Follow signs to B11 — Renal Clinic / Dialysis"] },
+  { name: "Clinic 7 — ACC Clinics (B12-B13) / ENT / Paed pre-op / Vascular / Wound Care / Stoma / Minor Procedures / DUIT / Trial of Void / Flex / Dermatology", code: "B12", zone: "B", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 1", "Follow signs to B12 — Clinic 7 (ACC Clinics)"] },
+  { name: "Clinic 6 — ACC Clinics (B12-B13)",                  code: "B13", zone: "B", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 1", "Follow signs to B13 — Clinic 6"] },
+  { name: "SCHHS Executive Reception",                          code: "B10", zone: "B", level: 1, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 1", "Follow signs to B10 — SCHHS Executive Reception"] },
+
+  // ── Zone B · Level 2 ────────────────────────────────────────────
+  { name: "Cardiac Care Unit (CCU)",                           code: "B21", zone: "B", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 2", "Follow signs to B21 — Cardiac Care Unit"] },
+  { name: "Clinical Investigation Unit — CIU (Cardiac Stress Test / Angiogram)",  code: "B20", zone: "B", level: 2, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 2", "Follow signs to B20 — Clinical Investigation Unit"] },
+
+  // ── Zone B · Level 3 ────────────────────────────────────────────
+  { name: "Ward 3C — Medical",                                 code: "B30", zone: "B", level: 3, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 3", "Follow signs to B30 — Ward 3C"] },
+  { name: "Ward 3D — Medical",                                 code: "B31", zone: "B", level: 3, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 3", "Follow signs to B31 — Ward 3D"] },
+
+  // ── Zone B · Level 4 ────────────────────────────────────────────
+  { name: "Ward 4C — Surgical (Gynae / Neuro)",                code: "B40", zone: "B", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 4", "Follow signs to B40 — Ward 4C"] },
+  { name: "Ward 4D — Surgical",                                code: "B41", zone: "B", level: 4, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 4", "Follow signs to B41 — Ward 4D"] },
+  { name: "Neonatal Intensive Care Unit (NICU)",               code: "B42", zone: "B", level: 4, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane", "Take Lift B to Level 4", "Follow signs to B42 — Neonatal Intensive Care"] },
+  { name: "Birthing",                                          code: "B43", zone: "B", level: 4, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane", "Take Lift B to Level 4", "Follow signs to B43 — Birthing"] },
+  { name: "Maternity Ward",                                    code: "B44", zone: "B", level: 4, parking: "Southern", steps: ["Use Southern Entrance off Frazer Lane", "Take Lift B to Level 4", "Follow signs to B44 — Maternity Ward"] },
+
+  // ── Zone B · Level 5 ────────────────────────────────────────────
+  { name: "Ward 5C — Palliative / Oncology",                   code: "B50", zone: "B", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 5", "Follow signs to B50 — Ward 5C (Palliative / Oncology)"] },
+  { name: "Ward 5D — Palliative / Oncology",                   code: "B51", zone: "B", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 5", "Follow signs to B51 — Ward 5D (Palliative / Oncology)"] },
+  { name: "Pathology Lab",                                     code: "B52", zone: "B", level: 5, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Take Lift B to Level 5", "Follow signs to B52 — Pathology Lab"] },
+
+  // ── Special / Entrances ─────────────────────────────────────────
+  { name: "Emergency Department (ED)",                         code: "ED",  zone: "—", level: 0, parking: "Hollows", steps: ["Drive to Hollows Lane — ED has its own drop-off zone directly adjacent", "Short-term parking available in Hollows Lane — restrictions apply", "ED entrance is clearly signed from Hollows Lane"] },
+  { name: "Mental Health Services",                            code: "—",   zone: "B", level: 0, parking: "Southern", steps: ["Use Frazer Lane Entrance (Southern)", "Exit SCUH and walk around to the right towards Dunlop Lane", "Follow signs to Mental Health Services"] },
+  { name: "Main Entrance",                                     code: "—",   zone: "A", level: 0, parking: "P1", steps: ["Main Entrance is on Doherty Street", "From P1 carpark: take lift to Level 1 and cross the link bridge", "Zone A (blue) and Zone B (green) lifts both accessible from inside"] },
+  { name: "Merlo Coffee",                                      code: "—",   zone: "A", level: 0, parking: "P1", steps: ["Enter via Main Entrance (Doherty St)", "Merlo Coffee is located at the heart of the hospital — the food court on the ground floor", "Halfway between Zone A and Zone B lifts — you have earned this ☕"] },
+];
+
+const PARKING_ZONES = [
+  {
+    id: "P1",
+    name: "P1 — Main Multi-Storey Carpark",
+    access: "Enter from Eccles Boulevard",
+    note: "Connected to hospital via link bridge on Level 1. Best general parking.",
+    bestFor: ["Outpatients", "Pharmacy", "Most Level 1–5 departments", "Visiting patients in wards"],
+    cost: true,
+    mapsUrl: "https://maps.google.com/?q=Eccles+Boulevard+Birtinya+QLD+SCUH+P1+carpark&ll=-26.7438,153.1138&z=18",
+    streetViewUrl: "https://maps.google.com/?q=-26.7438,153.1138",
+  },
+  {
+    id: "P2 / P3",
+    name: "P2 / P3 — Private Hospital Carparks",
+    access: "Northern entrance, near Sunshine Coast University Private Hospital",
+    note: "Best if attending the Private Hospital (Ramsay), not the public SCUH.",
+    bestFor: ["Sunshine Coast University Private Hospital appointments"],
+    cost: true,
+    mapsUrl: "https://maps.google.com/?q=3+Doherty+Street+Birtinya+QLD&ll=-26.7428,153.1148&z=18",
+    streetViewUrl: "https://maps.google.com/?q=-26.7428,153.1148",
+  },
+  {
+    id: "Southern",
+    name: "Southern Entrance Carpark",
+    access: "Enter from Frazer Lane",
+    note: "Dedicated/concessional parking for frequent visitors. After-hours maternity access.",
+    bestFor: ["Medical Imaging (Zone A, Level 1)", "Adem Crosby Cancer Centre (B01)", "Renal / Dialysis patients", "After-hours maternity", "Frequent outpatient visits"],
+    cost: false,
+    concession: true,
+    mapsUrl: "https://maps.google.com/?q=Frazer+Lane+Birtinya+QLD+SCUH+Southern+Entrance&ll=-26.7452,153.1143&z=18",
+    streetViewUrl: "https://maps.google.com/?q=-26.7452,153.1143",
+  },
+  {
+    id: "Hollows",
+    name: "Hollows Lane — ED Drop-Off",
+    access: "Short-term drop-off in Hollows Lane",
+    note: "Short-stay only. Restrictions apply. Not for extended parking.",
+    bestFor: ["Emergency Department drop-off", "Short-term taxi/rideshare drop-off"],
+    cost: false,
+    shortOnly: true,
+    mapsUrl: "https://maps.google.com/?q=Hollows+Lane+Birtinya+QLD+SCUH+Emergency&ll=-26.7441,153.1133&z=18",
+    streetViewUrl: "https://maps.google.com/?q=-26.7441,153.1133",
+  },
+  {
+    id: "Main",
+    name: "Main Entry Drop-Off Zone",
+    access: "Doherty Street, near main entrance",
+    note: "Taxis, rideshare and private drop-off. Taxi rank at Doherty St. Bus stop on Eccles Blvd.",
+    bestFor: ["Quick drop-off any department", "Taxi / Uber arrivals"],
+    cost: false,
+    shortOnly: true,
+    mapsUrl: "https://maps.google.com/?q=6+Doherty+Street+Birtinya+QLD+SCUH&ll=-26.7441,153.1146&z=18",
+    streetViewUrl: "https://maps.google.com/?q=-26.7441,153.1146",
+  },
+  {
+    id: "Street",
+    name: "Street Parking — Doherty St / nearby",
+    access: "Street parking around the hospital precinct",
+    note: "Pay via the EasyPark app. Time limits may apply — check signage on arrival.",
+    bestFor: ["Adem Crosby Cancer Centre"],
+    cost: true,
+    easypark: true,
+    mapsUrl: "https://maps.google.com/?q=Doherty+Street+Birtinya+QLD+street+parking&ll=-26.7441,153.1146&z=17",
+    streetViewUrl: "https://maps.google.com/?q=-26.7441,153.1146",
+  },
+];
+
+const QUICK_ACCESS = [
+  { name: "Emergency", code: "ED", icon: "🚨" },
+  { name: "Imaging", code: "A01", icon: "🩻" },
+  { name: "Adem Crosby", code: "B01", icon: "🎗️" },
+  { name: "Pharmacy", code: "A17", icon: "💊" },
+  { name: "Maternity", code: "A44", icon: "👶" },
+  { name: "Cardiac Care", code: "B21", icon: "❤️" },
+  { name: "Renal Clinic", code: "B11", icon: "🩺" },
+  { name: "Pathology", code: "B52", icon: "🔬" },
+  { name: "Day Surgery", code: "A22", icon: "🏥" },
+  { name: "Merlo Coffee", code: "—", icon: "☕" },
+];
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+
+function init() {
+  // Quick grid
+  const qg = document.getElementById('quickGrid');
+  QUICK_ACCESS.forEach(q => {
+    const dept = DEPARTMENTS.find(d => d.code === q.code);
+    const btn = document.createElement('div');
+    btn.className = 'quick-btn';
+    btn.innerHTML = `<div class="quick-btn-icon">${q.icon}</div><div class="quick-btn-name">${q.name}</div><div class="quick-btn-code">${q.code}</div>`;
+    btn.onclick = () => showDirection(dept);
+    qg.appendChild(btn);
+  });
+
+  // Parking grid
+  const pg = document.getElementById('parkingGrid');
+  PARKING_ZONES.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'parking-card';
+    const tags = p.bestFor.map(b => `<span class="dept-pill">${b}</span>`).join('');
+    let flags = '';
+    if (p.cost && !p.easypark) flags = '<span class="step-tag" style="background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)">💰 Paid — max $14.50/day</span>';
+    if (p.easypark) flags = '<span class="step-tag" style="background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)">📱 Paid via EasyPark app</span>';
+    if (p.concession) flags = '<span class="step-tag" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)">🎟 Concession/Dedicated</span>';
+    if (p.shortOnly) flags = '<span class="step-tag" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)">⏱ Short-stay only</span>';
+    card.innerHTML = `
+      <div class="parking-card-header">
+        <div class="parking-badge">${p.id}</div>
+        <div>
+          <div class="parking-card-name">${p.name}</div>
+          <div class="parking-card-note">${p.access}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">${flags}</div>
+      <div class="parking-best-for"><strong>Best for:</strong><br>${tags}</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);margin-bottom:12px">${p.note}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="window.open(this.dataset.url,'_blank')" data-url="${p.streetViewUrl}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.3);color:#93c5fd;border-radius:8px;padding:9px 10px;font-size:13px;font-weight:600;cursor:pointer;border-style:solid">
+          📍 View Location
+        </button>
+        <button onclick="window.open(this.dataset.url,'_blank')" data-url="${p.mapsUrl}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;border-radius:8px;padding:9px 10px;font-size:13px;font-weight:600;cursor:pointer;border-style:solid">
+          🗺 Open in Maps
+        </button>
+      </div>
+    `;
+    pg.appendChild(card);
+  });
+
+  // All depts list
+  const ad = document.getElementById('allDepts');
+  DEPARTMENTS.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'dept-row';
+    let codeClass = d.zone === 'A' ? 'zone-a-tag' : d.zone === 'B' ? 'zone-b-tag' : 'zone-p-tag';
+    row.innerHTML = `
+      <span class="result-code ${codeClass}">${d.code}</span>
+      <span class="dept-row-name">${d.name}</span>
+    `;
+    row.onclick = () => { switchTab('find'); showDirection(d); };
+    ad.appendChild(row);
+  });
+}
+
+// ─── SEARCH ────────────────────────────────────────────────────────────────
+
+function onSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const res = document.getElementById('searchResults');
+  if (q.length < 2) { res.style.display = 'none'; return; }
+
+  const matches = DEPARTMENTS.filter(d =>
+    d.name.toLowerCase().includes(q) || d.code.toLowerCase().includes(q)
+  );
+
+  if (matches.length === 0) {
+    res.style.display = 'block';
+    res.innerHTML = '<div class="no-results">No departments found. Try a different term.</div>';
+    return;
+  }
+
+  res.style.display = 'block';
+  res.innerHTML = matches.map((d, i) => {
+    let codeClass = d.zone === 'A' ? 'zone-a-tag' : d.zone === 'B' ? 'zone-b-tag' : 'zone-p-tag';
+    return `<div class="result-item" onclick="showDirectionByIndex(${DEPARTMENTS.indexOf(d)})">
+      <span class="result-code ${codeClass}">${d.code}</span>
+      <span class="result-name">${d.name}</span>
+    </div>`;
+  }).join('');
+}
+
+function doSearch() {
+  onSearch();
+}
+
+function showDirectionByIndex(i) {
+  showDirection(DEPARTMENTS[i]);
+}
+
+// ─── DIRECTION DISPLAY ─────────────────────────────────────────────────────
+
+function showDirection(dept) {
+  if (!dept) return;
+
+  // Hide search, show card
+  document.getElementById('searchResults').style.display = 'none';
+  document.getElementById('quickSection').style.display = 'none';
+  document.getElementById('searchInput').value = '';
+
+  const card = document.getElementById('directionCard');
+  card.style.display = 'block';
+
+  // Name
+  document.getElementById('cardName').textContent = dept.name;
+
+  // Badge
+  let badgeClass = dept.zone === 'A' ? 'zone-a-badge' : dept.zone === 'B' ? 'zone-b-badge' : 'zone-p-badge';
+  let zoneLabel = dept.zone === 'A' ? '🔵 Zone A — Level ' + dept.level : dept.zone === 'B' ? '🟢 Zone B — Level ' + dept.level : '🅿️';
+  document.getElementById('cardBadge').innerHTML = `<div class="location-code-badge ${badgeClass}">${dept.code} &nbsp;·&nbsp; ${zoneLabel}</div>`;
+
+  // Parking recommendation
+  const parkingRec = PARKING_ZONES.find(p => p.id === dept.parking);
+  if (parkingRec) {
+    document.getElementById('cardParking').innerHTML = `
+      <div class="parking-rec">
+        <div class="parking-icon">🅿️</div>
+        <div class="parking-rec-content">
+          <div class="parking-rec-label">Best Parking</div>
+          <div class="parking-rec-text"><strong>${parkingRec.name}</strong> — ${parkingRec.access}<br><span style="color:var(--muted);font-size:12px">${parkingRec.note}</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button onclick="window.open('${parkingRec.streetViewUrl}','_blank')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.3);color:#93c5fd;border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600;cursor:pointer;border-style:solid">📍 View Location</button>
+            <button onclick="window.open('${parkingRec.mapsUrl}','_blank')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600;cursor:pointer;border-style:solid">🗺 Open in Maps</button>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    // No exact match — hide parking section gracefully
+    document.getElementById('cardParking').innerHTML = '';
+  }
+
+  // Steps
+  const stepsEl = document.getElementById('cardSteps');
+  stepsEl.innerHTML = dept.steps.map((s, i) => {
+    const isLast = i === dept.steps.length - 1;
+    const numClass = isLast ? 'final' : i === 0 ? 'active' : 'done';
+    return `
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num ${numClass}">${isLast ? '★' : i + 1}</div>
+          ${!isLast ? '<div class="step-line"></div>' : ''}
+        </div>
+        <div class="step-content">
+          <div class="step-title">${s}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Scroll to card
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearDirection() {
+  document.getElementById('directionCard').style.display = 'none';
+  document.getElementById('quickSection').style.display = 'block';
+  document.getElementById('outpatientsMenu').style.display = 'none';
+}
+
+// ─── TABS ──────────────────────────────────────────────────────────────────
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['find','parking','map','all'][i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ─── FLOOR MAP ─────────────────────────────────────────────────────────────
+
+function showMapLevel(level) {
+  ['site','g','1','2'].forEach(l => {
+    const el = document.getElementById('map-' + l);
+    if (el) el.style.display = l === level ? 'block' : 'none';
+  });
+  document.querySelectorAll('.map-level-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['site','g','1','2'][i] === level);
+  });
+}
+
+function mapTap(info) {
+  const el = document.getElementById('mapHighlightInfo');
+  el.style.display = 'block';
+  el.innerHTML = '📍 ' + info;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── OUTPATIENTS ──────────────────────────────────────────────────────────
+
+const OUTPATIENT_CLINICS = [
+  {
+    specialty: "Infectious Disease",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10) is not clearly signposted from the lift. Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Cardiology / Heart",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Respiratory",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1. Walk past Clinic 1 (A15) and Clinic 2 (A14) to find A10 in the corridor between them."
+  },
+  {
+    specialty: "Neurology / Stroke",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Gastroenterology / IBD",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Rheumatology / Diabetes / Endocrinology",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Plastics / Podiatry / Rehab",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1. Follow the corridor between Clinics A14 and A15."
+  },
+  {
+    specialty: "Geriatrics / General Medicine",
+    code: "A10", level: 1, zone: "A",
+    note: "Clinic 4 (A10). Exit Lift A on Level 1 — A15 is immediately on your right. Continue along the corridor and you'll see A14 also on your right. Between A15 and A14 look for a side corridor — turn into it and you'll find A10, A11, A12 and A13 on your right. If you reach A14 you have gone slightly too far — the side corridor entrance is just before it."
+  },
+  {
+    specialty: "Orthopaedics / Fracture / Acute Knee / Plaster Room",
+    code: "A14", level: 1, zone: "A",
+    note: "Clinic 2 (A14). Exit Lift A on Level 1 and follow signs to A14 on your right."
+  },
+  {
+    specialty: "General Surgery / Gynaecology / Urology / Genetics",
+    code: "A15", level: 1, zone: "A",
+    note: "Clinic 1 (A15). Exit Lift A on Level 1 — Clinic 1 is clearly visible on your right as you exit the lift."
+  },
+  {
+    specialty: "Allied Health",
+    code: "A16", level: 1, zone: "A",
+    note: "Allied Health Reception (A16). Exit Lift A on Level 1 and follow signs to A16."
+  },
+  {
+    specialty: "Audiology / Hearing",
+    code: "A13", level: 1, zone: "A",
+    note: "Clinic 3 / Audiology (A13). Exit Lift A on Level 1 and follow signs to A13."
+  },
+  {
+    specialty: "Pathology / Blood Tests / Diagnostics",
+    code: "A11", level: 1, zone: "A",
+    note: "Clinic 5 (A11). Exit Lift A on Level 1 and follow signs to A11."
+  },
+  {
+    specialty: "ENT / Ear Nose Throat / Dermatology / Wound Care / Stoma",
+    code: "B12", level: 1, zone: "B",
+    note: "Clinic 7 — ACC Clinics (B12). These are Zone B clinics on Level 1. From the Main Entrance take Lift B (green) to Level 1 and follow signs to B12."
+  },
+  {
+    specialty: "Vascular / Minor Procedures / Trial of Void / Flex",
+    code: "B13", level: 1, zone: "B",
+    note: "Clinic 6 — ACC Clinics (B13). Zone B clinics on Level 1. From the Main Entrance take Lift B (green) to Level 1 and follow signs to B13."
+  },
+  {
+    specialty: "Renal / Kidney / Dialysis",
+    code: "B11", level: 1, zone: "B",
+    note: "Renal Clinic (B11). Zone B Level 1. Best parking is the Southern Entrance off Frazer Lane — dedicated for frequent visitors. Take Lift B to Level 1 and follow signs to B11."
+  },
+  {
+    specialty: "Dental",
+    code: "A21", level: 2, zone: "A",
+    note: "Dental Service (A21) is on Level 2, not Level 1. Take Lift A to Level 2 and follow signs to A21."
+  },
+  {
+    specialty: "Day Surgery / Pre-op",
+    code: "A22", level: 2, zone: "A",
+    note: "Day Surgery (A22) is on Level 2. Take Lift A to Level 2 and follow signs to A22. Note: CT Colonoscopy / Endoscopy is accessed via the Northern entrance at Level 2."
+  },
+];
+
+function showOutpatients() {
+  // Build tiles
+  const container = document.getElementById('outpatientTiles');
+  container.innerHTML = '';
+  OUTPATIENT_CLINICS.forEach((c, i) => {
+    const zoneClass = c.zone === 'A' ? 'zone-a-tag' : 'zone-b-tag';
+    const tile = document.createElement('div');
+    tile.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer';
+    tile.innerHTML = `
+      <div onclick="toggleOutpatientTile(${i})" style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+        <span class="result-code ${zoneClass}">${c.code}</span>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600">${c.specialty}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Level ${c.level} · Zone ${c.zone}</div>
+        </div>
+        <div id="arrow-${i}" style="color:var(--muted);font-size:18px;transition:transform 0.2s">›</div>
+      </div>
+      <div id="detail-${i}" style="display:none;padding:0 16px 14px;border-top:1px solid var(--border);margin-top:0">
+        <div style="background:rgba(29,78,216,0.08);border:1px solid rgba(29,78,216,0.2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);line-height:1.6;margin-top:12px">
+          📍 <strong>${c.code} · Level ${c.level} · Zone ${c.zone}</strong><br><br>${c.note}
+        </div>
+        <button onclick="showDirectionByCode('${c.code}')" style="width:100%;margin-top:10px;background:var(--accent);border:none;border-radius:8px;padding:10px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">
+          Full Directions & Parking →
+        </button>
+      </div>`;
+    container.appendChild(tile);
+  });
+
+  document.getElementById('outpatientsMenu').style.display = 'block';
+  document.getElementById('quickSection').style.display = 'none';
+  document.getElementById('directionCard').style.display = 'none';
+  document.getElementById('outpatientsMenu').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleOutpatientTile(i) {
+  const detail = document.getElementById('detail-' + i);
+  const arrow = document.getElementById('arrow-' + i);
+  const isOpen = detail.style.display !== 'none';
+  // Close all
+  document.querySelectorAll('[id^="detail-"]').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('[id^="arrow-"]').forEach(a => a.style.transform = '');
+  // Toggle clicked
+  if (!isOpen) {
+    detail.style.display = 'block';
+    arrow.style.transform = 'rotate(90deg)';
+  }
+}
+
+function hideOutpatients() {
+  document.getElementById('outpatientsMenu').style.display = 'block';
+  document.getElementById('quickSection').style.display = 'none';
+  document.getElementById('directionCard').style.display = 'none';
+  document.getElementById('outpatientsMenu').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hideOutpatients() {
+  document.getElementById('outpatientsMenu').style.display = 'none';
+  document.getElementById('quickSection').style.display = 'block';
+}
+
+function showDirectionByCode(code) {
+  const dept = DEPARTMENTS.find(d => d.code === code);
+  if (dept) {
+    document.getElementById('outpatientsMenu').style.display = 'none';
+    showDirection(dept);
+  }
+}
+
+// ─── THEME ────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('themeBtn').textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+  localStorage.setItem('scuh-theme', isLight ? 'light' : 'dark');
+}
+
+// ─── START ────────────────────────────────────────────────────────────────
+// Restore saved theme preference
+if (localStorage.getItem('scuh-theme') === 'light') {
+  document.body.classList.add('light');
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('themeBtn');
+    if (btn) btn.textContent = '🌙 Dark Mode';
+  });
+}
+init();
+</script>
+  <div style="max-width:600px;margin:24px auto 0;padding:0 16px 40px;text-align:center">
+    <div style="font-size:12px;color:#374151;line-height:1.7">
+      🏥 <strong style="color:#64748b">SCUH Navigator</strong> is a community-built wayfinding tool for Sunshine Coast University Hospital, Birtinya.<br>
+      Information is provided in good faith but is <strong>unverified</strong> — always follow official hospital signage.<br><br>
+      Spotted something wrong? <a href="mailto:scvdappcreator@gmail.com?subject=SCUH Navigator Correction&body=Hi, I'd like to report an issue with the SCUH Navigator app:%0D%0A%0D%0ADepartment:%0D%0AWhat's wrong:%0D%0AWhat it should say:%0D%0A" style="color:#2563eb;font-weight:600">Send us a correction</a><br><br>
+      <span style="color:#1f2d45">Built with ❤️ for patients and families by SCVD App Creator · June 2026</span>
+    </div>
+  </div>
+</body>
+</html>
